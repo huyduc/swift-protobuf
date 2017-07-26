@@ -83,12 +83,14 @@ class EnumGenerator {
   }
 
   func generateRuntimeSupport(printer p: inout CodePrinter) {
-    p.print("\n")
-    p.print("extension \(swiftFullName): SwiftProtobuf._ProtoNameProviding {\n")
-    p.indent()
-    generateProtoNameProviding(printer: &p)
-    p.outdent()
-    p.print("}\n")
+	if generatorOptions.enumSerializingOption == .String {
+     p.print("\n")
+     p.print("extension \(swiftFullName): SwiftProtobuf._ProtoNameProviding {\n")
+     p.indent()
+     generateProtoNameProviding(printer: &p)
+     p.outdent()
+     p.print("}\n")
+	}
   }
 
   /// Generates the cases or statics (for alias) for the values.

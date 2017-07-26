@@ -22,9 +22,15 @@ class GeneratorOptions {
     case Public
   }
 
+  enum EnumSerializingOption: String {
+	case String
+	case Integer
+  }
+
   let outputNaming: OutputNaming
   let protoToModuleMappings: ProtoFileToModuleMappings
   let visibility: Visibility
+  let enumSerializingOption: EnumSerializingOption
 
   /// A string snippet to insert for the visibility
   let visibilitySourceSnippet: String
@@ -33,6 +39,7 @@ class GeneratorOptions {
     var outputNaming: OutputNaming = .FullPath
     var protoFileToModule: ProtoFileToModuleMappings?
     var visibility: Visibility = .Internal
+	var enumSerializingOption: EnumSerializingOption = .String
 
     for pair in parseParameter(string:parameter) {
       switch pair.key {
@@ -60,6 +67,13 @@ class GeneratorOptions {
           throw GenerationError.invalidParameterValue(name: pair.key,
                                                       value: pair.value)
         }
+		case "EnumSerializingOption":
+			if let value = EnumSerializingOption(rawValue: pair.value) {
+				enumSerializingOption = value
+			} else {
+				throw GenerationError.invalidParameterValue(name: pair.key,
+				                                            value: pair.value)
+		}
       default:
         throw GenerationError.unknownParameter(name: pair.key)
       }
@@ -68,6 +82,7 @@ class GeneratorOptions {
     self.outputNaming = outputNaming
     self.protoToModuleMappings = protoFileToModule ?? ProtoFileToModuleMappings()
     self.visibility = visibility
+	self.enumSerializingOption = enumSerializingOption
 
     switch visibility {
     case .Internal:
